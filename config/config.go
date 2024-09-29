@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -18,7 +19,12 @@ type Config struct {
 }
 
 func ReadApiKey() string {
-	file, err := os.Open("config.yml")
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file, err := os.Open(filepath.Join(filepath.Dir(cwd), "..", "config.yml"))
 	if err != nil {
 		log.Fatalf("Error reading YAML file: %v", err)
 	}

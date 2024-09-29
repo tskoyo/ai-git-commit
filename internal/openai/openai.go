@@ -3,6 +3,7 @@ package openai
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 )
@@ -36,6 +37,14 @@ type RequestBody struct {
 }
 
 func GetCommitMessage(apiKey, prompt string) (string, error) {
+	if apiKey == "" {
+		return "", errors.New("missing API key")
+	}
+
+	if prompt == "" {
+		return "", errors.New("empty prompt")
+	}
+
 	requestBody := RequestBody{
 		Model:   "gpt-4o",
 		Message: []Message{{Role: "user", Content: prompt}},
@@ -66,5 +75,15 @@ func GetCommitMessage(apiKey, prompt string) (string, error) {
 		return "", err
 	}
 
-	return string(body), nil
+	var responseBody ResponseBody
+	err = json.Unmarshal(body, &responseBody)
+	if err != nil {
+		return "", err
+	}
+
+	if len(responseBody.Choices) > 0 {
+		return responseBody.Choices[0].Message.Content, nil
+	}
+
+	return "", errors.New("no choices found in response")
 }
