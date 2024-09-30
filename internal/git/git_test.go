@@ -16,7 +16,7 @@ func TestIsGitRepo(t *testing.T) {
 		return exec.Command("false")
 	}
 
-	err := isGitRepo()
+	err := IsGitRepo()
 	assert.NoError(t, err, "expected nil, got error: %v", err)
 }
 
@@ -37,7 +37,7 @@ func TestGetStagedDiff(t *testing.T) {
 		return exec.Command("false")
 	}
 
-	diff, err := getStagedDiff()
+	diff, err := GetStagedDiff()
 	assert.NoError(t, err, "expected nil, got error: %v", err)
 	assert.Contains(t, diff, "Modified package declaration", "expected diff to contain changes, got: %s", diff)
 }
@@ -55,7 +55,7 @@ func main() {
 }`
 
 	expectedOutput := "--- a/main.go +++ b/main.go @@ -1,4 +1,4 @@ -package main +package main // Modified package declaration func main() { // Some code }"
-	formattedDiff := formatDiff(diff)
+	formattedDiff := FormatDiff(diff)
 
 	assert.Equal(t, expectedOutput, formattedDiff, "expected formatted diff to match, got: %s", formattedDiff)
 }

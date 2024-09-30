@@ -1,39 +1,16 @@
 package git
 
 import (
-	"ai-git-commit/internal/openai"
 	"bytes"
 	"errors"
-	"fmt"
-	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
 
 var execCommand = exec.Command
 
-func GitDiff(apiKey string) {
-	err := isGitRepo()
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
-
-	diff, err := getStagedDiff()
-	if err != nil {
-		log.Fatalf("Error getting staged diff: %v", err)
-	}
-
-	formattedDiff := formatDiff(diff)
-
-	commitMessage, err := openai.GetCommitMessage(apiKey, "Generate a concise commit message for the following changes: "+formattedDiff)
-	if err != nil {
-		log.Fatalf("Error generating commit message: %v", err)
-	}
-
-	fmt.Printf("Suggested Commit Message: %s\n", commitMessage)
-}
-
-func isGitRepo() error {
+func IsGitRepo() error {
 	cmd := execCommand("git", "rev-parse", "--is-inside-work-tree")
 	if err := cmd.Run(); err != nil {
 		return errors.New("current directory is not a git repository")
@@ -41,7 +18,7 @@ func isGitRepo() error {
 	return nil
 }
 
-func getStagedDiff() (string, error) {
+func GetStagedDiff() (string, error) {
 	cmd := execCommand("git", "diff", "--cached")
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -51,11 +28,8 @@ func getStagedDiff() (string, error) {
 	return out.String(), nil
 }
 
-func formatDiff(diff string) string {
+func FormatDiff(diff string) string {
 	lines := strings.Split(diff, "\n")
-	for _, line := range lines {
-		fmt.Printf("line %s\n", line)
-	}
 
 	var formattedLines []string
 
@@ -67,4 +41,12 @@ func formatDiff(diff string) string {
 	}
 
 	return strings.Join(formattedLines, " ")
+}
+
+func CommitMessage(message string) error {
+	cmd := exec.Command("git", "commit", "-m", message)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
 }
