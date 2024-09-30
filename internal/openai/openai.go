@@ -32,8 +32,8 @@ type ResponseBody struct {
 }
 
 type RequestBody struct {
-	Model   string    `json:"model"`
-	Message []Message `json:"messages"`
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
 }
 
 func GetCommitMessage(apiKey, prompt string) (string, error) {
@@ -46,8 +46,8 @@ func GetCommitMessage(apiKey, prompt string) (string, error) {
 	}
 
 	requestBody := RequestBody{
-		Model:   "gpt-4o",
-		Message: []Message{{Role: "user", Content: prompt}},
+		Model:    "gpt-4",
+		Messages: []Message{{Role: "user", Content: prompt}},
 	}
 
 	jsonData, err := json.Marshal(requestBody)
