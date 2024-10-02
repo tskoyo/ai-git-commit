@@ -1,7 +1,6 @@
 package commit
 
 import (
-	"ai-git-commit/config"
 	"ai-git-commit/internal/git"
 	"ai-git-commit/internal/openai"
 	"bufio"
@@ -11,19 +10,12 @@ import (
 	"strings"
 )
 
-func GenerateMessage() {
-	apiKey, err := config.ReadApiKey()
-	if err != nil {
-		log.Fatalf("Error reading API key: %v", err)
-	}
-
+func GenerateMessage(apiKey string) {
 	for {
 		commitMessage := gitDiff(apiKey)
 
-		// Display the suggested commit message
 		fmt.Printf("Suggested Commit Message: %s\n", commitMessage)
 
-		// Ask user for confirmation
 		fmt.Print("Are you satisfied with this commit message? (yes/no): ")
 		reader := bufio.NewReader(os.Stdin)
 		userInput, _ := reader.ReadString('\n')

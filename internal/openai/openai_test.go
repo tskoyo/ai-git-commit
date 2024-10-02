@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"ai-git-commit/config"
 	"os"
 	"testing"
 
@@ -16,19 +15,19 @@ func TestGetCommitMessage_EmptyAPIKey(t *testing.T) {
 }
 
 func TestGetCommitMessage_EmptyRequestBody(t *testing.T) {
-	apiKey, err := config.ReadApiKey()
-	if err != nil {
-		panic(err)
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		t.Errorf("Error getting API key")
 	}
-	_, err = GetCommitMessage(apiKey, "")
+	_, err := GetCommitMessage(apiKey, "")
 
 	assert.Error(t, err, "empty prompt")
 }
 
 func TestGetCommitMessage_Success(t *testing.T) {
-	apiKey, err := config.ReadApiKey()
-	if err != nil {
-		panic(err)
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		t.Errorf("Error getting API key")
 	}
 
 	if os.Getenv("GITHUB_ACTIONS") == "true" {
