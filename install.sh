@@ -19,4 +19,4 @@ if [ "$answer" != "${answer#[Yy]}" ]; then
     echo "Git alias 'ai-commit' has been set up."
 fi
 
-echo "Installation complete! You can now use 'ai-git-commit' or 'git ai-commit' (if you set up the alias)."
+echo "Installation complete! You can now use 'ai-git-commit' or 'git ai-commit' (if you set up the alias)"
