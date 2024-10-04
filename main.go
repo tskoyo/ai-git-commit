@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	apiKey, err := config.ReadAPIKey()
+	configReader := &config.FileConfigReader{Filename: "config.yml"}
+
+	apiKey, err := configReader.ReadAPIKey()
 	if err != nil {
 		panic(err)
 	}

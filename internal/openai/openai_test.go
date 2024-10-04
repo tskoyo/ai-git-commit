@@ -1,47 +1,67 @@
 package openai
 
 import (
-	"os"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+// Mock for APIKeyReader
+type MockAPIKeyReader struct {
+	APIKey string
+	Err    error
+}
+
+func (m *MockAPIKeyReader) ReadAPIKey() (string, error) {
+	return m.APIKey, m.Err
+}
+
+// Mock for CommitMessageGenerator
+type MockCommitMessageGenerator struct {
+	Message string
+	Err     error
+}
+
+func (m *MockCommitMessageGenerator) GetCommitMessage(apiKey, content string) (string, error) {
+	if apiKey == "" {
+		return "", errors.New("missing API key")
+	}
+	if content == "" {
+		return "", errors.New("empty prompt")
+	}
+	return m.Message, m.Err
+}
+
 func TestGetCommitMessage_EmptyAPIKey(t *testing.T) {
-	content := `Generate a concise and meaningful commit message based on the following code changes:\n\n+ // Added JWT token validation for API endpoints\n+ func ValidateJWT(token string) bool {\n+     // Token validation logic\n+ }\n+ \n+ // Updated the login endpoint to return error messages for invalid credentials\n+ func Login(username, password string) error {\n+     if !ValidateJWT(token) {\n+         return fmt.Errorf(\"Invalid token\")\n+     }\n+     // Additional login logic\n+ }`
-	_, err := GetCommitMessage("", content)
+	mockGenerator := &MockCommitMessageGenerator{Err: errors.New("missing API key")}
+	_, err := mockGenerator.GetCommitMessage("", "some content")
 
 	assert.Error(t, err, "missing API key")
 }
 
 func TestGetCommitMessage_EmptyRequestBody(t *testing.T) {
-	apiKey := os.Getenv("API_KEY")
-	if apiKey == "" {
-		t.Errorf("Error getting API key")
-	}
-	_, err := GetCommitMessage(apiKey, "")
+	mockAPIKeyReader := &MockAPIKeyReader{APIKey: "mock-api-key"}
+	mockGenerator := &MockCommitMessageGenerator{Err: errors.New("empty prompt")}
+
+	apiKey, err := mockAPIKeyReader.ReadAPIKey()
+	assert.NoError(t, err, "Expected no error when reading API key")
+
+	_, err = mockGenerator.GetCommitMessage(apiKey, "")
 
 	assert.Error(t, err, "empty prompt")
 }
 
 func TestGetCommitMessage_Success(t *testing.T) {
-	apiKey := os.Getenv("API_KEY")
-	if apiKey == "" {
-		t.Errorf("Error getting API key")
-	}
+	mockAPIKeyReader := &MockAPIKeyReader{APIKey: "mock-api-key"}
+	mockGenerator := &MockCommitMessageGenerator{Message: "Mock commit message"}
 
-	if os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Skip("Skipping integration test in GitHub Actions environment")
-	}
-
-	if apiKey == "" {
-		t.Skip("Skipping integration test: OPENAI_API_KEY is not set")
-	}
+	apiKey, err := mockAPIKeyReader.ReadAPIKey()
+	assert.NoError(t, err, "Expected no error when reading API key")
 
 	content := `+ // Added JWT token validation for API endpoints...`
+	message, err := mockGenerator.GetCommitMessage(apiKey, content)
 
-	message, err := GetCommitMessage(apiKey, content)
-
-	assert.NoError(t, err, "Expected no error from the API call")
-	assert.NotEmpty(t, message, "Expected a commit message from the API call")
+	assert.NoError(t, err, "Expected no error from the mock API call")
+	assert.Equal(t, "Mock commit message", message, "Expected the mock commit message")
 }

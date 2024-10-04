@@ -46,7 +46,8 @@ func gitDiff(apiKey string) string {
 
 	formattedDiff := git.FormatDiff(diff)
 
-	commitMessage, err := openai.GetCommitMessage(apiKey, "Generate a concise commit message for the following changes: "+formattedDiff)
+	commitMessageGenerator := &openai.OpenAIGenerator{}
+	commitMessage, err := commitMessageGenerator.GetCommitMessage(apiKey, "Generate a concise commit message for the following changes: "+formattedDiff)
 	if err != nil {
 		log.Fatalf("Error generating commit message: %v", err)
 	}

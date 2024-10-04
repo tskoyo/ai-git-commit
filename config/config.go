@@ -1,11 +1,18 @@
 package config
 
 import (
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
+
+type APIKeyReader interface {
+	ReadAPIKey() (string, error)
+}
+
+type FileConfigReader struct {
+	Filename string
+}
 
 type OpenAIConfig struct {
 	APIKey    string `yaml:"api_key"`
@@ -17,48 +24,46 @@ type Config struct {
 	OpenAI OpenAIConfig `yaml:"openai"`
 }
 
-func OpenConfigFile(filename string) (*os.File, error) {
-	file, err := os.Open(filename)
+func (r *FileConfigReader) openConfigFile() (*os.File, error) {
+	file, err := os.Open(r.Filename)
 	if err != nil {
-		log.Fatalf("Error reading YAML file: %v", err)
 		return nil, err
 	}
 	return file, nil
 }
 
-func DecodeConfigFile(file *os.File) (Config, error) {
+func (r *FileConfigReader) decodeConfigFile(file *os.File) (Config, error) {
 	var cfg Config
 	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(&cfg); err != nil {
-		log.Fatalf("Error decoding YAML: %v", err)
 		return cfg, err
 	}
 	return cfg, nil
 }
 
-func GetAPIKey(cfg Config) (string, error) {
+func (r *FileConfigReader) getAPIKey(cfg Config) (string, error) {
 	if cfg.OpenAI.APIKey != "" {
 		return cfg.OpenAI.APIKey, nil
 	}
 
 	apiKey, ok := os.LookupEnv("API_KEY")
 	if !ok {
-		panic("API_KEY not found")
+		return "", os.ErrNotExist
 	}
 	return apiKey, nil
 }
 
-func ReadAPIKey() (string, error) {
-	file, err := OpenConfigFile("config.yml")
+func (r *FileConfigReader) ReadAPIKey() (string, error) {
+	file, err := r.openConfigFile()
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
 
-	cfg, err := DecodeConfigFile(file)
+	cfg, err := r.decodeConfigFile(file)
 	if err != nil {
 		return "", err
 	}
 
-	return GetAPIKey(cfg)
+	return r.getAPIKey(cfg)
 }
