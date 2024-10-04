@@ -6,7 +6,6 @@ A CLI tool written in Go that uses OpenAI's GPT-4 to generate meaningful git com
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Requirements](#requirements)
 
 ## Features
 - Automatically generate commit messages using OpenAI's GPT-4 model.
