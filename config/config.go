@@ -16,9 +16,8 @@ type FileConfigReader struct {
 }
 
 type OpenAIConfig struct {
-	APIKey    string `yaml:"api_key"`
-	Model     string `yaml:"model"`
-	MaxTokens int    `yaml:"max_tokens"`
+	APIKey string `yaml:"api_key"`
+	Model  string `yaml:"model"`
 }
 
 type Config struct {
