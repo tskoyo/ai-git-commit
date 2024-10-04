@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BINARY_NAME="ai-git-commit"
+INSTALL_PATH="/usr/local/bin/$BINARY_NAME"
 
 echo "Building the Go program..."
 go build -o $BINARY_NAME main.go
@@ -10,8 +11,21 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Installing the binary to /usr/local/bin..."
-sudo mv $BINARY_NAME /usr/local/bin/
+if [ -f "$INSTALL_PATH" ]; then
+    echo "$BINARY_NAME is already installed."
+
+    if cmp -s "$BINARY_NAME" "$INSTALL_PATH"; then
+        echo "The existing binary is up-to-date. No update necessary."
+        rm $BINARY_NAME
+        exit 0
+    else
+        echo "Updating the installed binary..."
+    fi
+else
+    echo "No existing installation found. Installing the binary..."
+fi
+
+sudo mv $BINARY_NAME "$INSTALL_PATH"
 
 read -p "Do you want to set up the Git alias 'git ai-commit'? (y/n) " answer
 if [ "$answer" != "${answer#[Yy]}" ]; then
