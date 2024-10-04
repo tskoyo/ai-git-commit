@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -46,18 +47,20 @@ func (r *FileConfigReader) getAPIKey(cfg Config) (string, error) {
 		return cfg.OpenAI.APIKey, nil
 	}
 
-	apiKey, ok := os.LookupEnv("API_KEY")
-	if !ok {
-		return "", os.ErrNotExist
-	}
-	return apiKey, nil
+	return "", os.ErrNotExist
 }
 
 func (r *FileConfigReader) ReadAPIKey() (string, error) {
 	file, err := r.openConfigFile()
 	if err != nil {
-		return "", err
+		apiKey, ok := os.LookupEnv("API_KEY")
+
+		if !ok {
+			return "", errors.New("Environment variable API_KEY is not set")
+		}
+		return apiKey, nil
 	}
+
 	defer file.Close()
 
 	cfg, err := r.decodeConfigFile(file)

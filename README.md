@@ -6,8 +6,7 @@ A CLI tool written in Go that uses OpenAI's GPT-4 to generate meaningful git com
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Usage](#usage)
-- [Environment Variables](#environment-variables)
+- [Requirements](#requirements)
 
 ## Features
 - Automatically generate commit messages using OpenAI's GPT-4 model.
@@ -24,6 +23,9 @@ A CLI tool written in Go that uses OpenAI's GPT-4 to generate meaningful git com
 3. Install dependencies
    ```bash
    go mod tidy
+4. Install the app
+  ```bash
+  ./install.sh (chmod +x ./install.sh if necessary)
 
 ## Configuration
 
@@ -33,4 +35,4 @@ A CLI tool written in Go that uses OpenAI's GPT-4 to generate meaningful git com
     api_key: "YOUR_OPENAI_API_KEY"
     model: "gpt-4"
     max_tokens: 100
-2. Alternatively, you can set environment variables (see Environment Variables section).
+2. Alternatively, you can set an environment variable API_KEY.
