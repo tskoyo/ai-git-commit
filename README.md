@@ -25,7 +25,7 @@ A CLI tool written in Go that uses OpenAI's GPT-4 to generate meaningful git com
    go mod tidy
 4. Install the app
   ```bash
-  ./install.sh (chmod +x ./install.sh if necessary)
+  ./install.sh (chmod +x ./install.sh if necessary.)
 
 ## Configuration
 
