@@ -1,15 +1,15 @@
 package main
 
 import (
+	"ai-git-commit/config"
 	"ai-git-commit/internal/commit"
-	"os"
 )
 
 func main() {
-	apiKey, ok := os.LookupEnv("API_KEY")
-	if !ok {
-		panic("API_KEY not found")
-	} else {
-		commit.GenerateMessage(apiKey)
+	apiKey, err := config.ReadAPIKey()
+	if err != nil {
+		panic(err)
 	}
+
+	commit.GenerateMessage(apiKey)
 }

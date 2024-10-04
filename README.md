@@ -8,14 +8,10 @@ A CLI tool written in Go that uses OpenAI's GPT-4 to generate meaningful git com
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Environment Variables](#environment-variables)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 - Automatically generate commit messages using OpenAI's GPT-4 model.
 - Reads code changes and provides concise, descriptive commit messages.
-- Skips integration tests in CI/CD environments like GitHub Actions.
 - Configurable through a YAML file and environment variables.
 
 ## Installation
